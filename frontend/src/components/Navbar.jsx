@@ -1,10 +1,11 @@
 import React from 'react';
-import { Shield, BookOpen, Scroll, Activity, AlertTriangle, Eye } from 'lucide-react';
+import { Shield, BookOpen, Scroll, Activity, AlertTriangle, Eye, Users } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab }) {
+export default function Navbar({ activeTab, setActiveTab, squadCount = 0 }) {
   const tabs = [
     { id: 'dashboard', label: 'Command Center', icon: Eye },
     { id: 'beyonders', label: 'Beyonder Directory', icon: Shield },
+    { id: 'squads', label: 'Squad Formation', icon: Users, badge: squadCount },
     { id: 'potions', label: 'Potion Codex', icon: BookOpen },
     { id: 'commissions', label: 'Commission Board', icon: Scroll },
     { id: 'claims', label: 'Dispatch & Debriefs', icon: Activity },
@@ -45,6 +46,11 @@ export default function Navbar({ activeTab, setActiveTab }) {
               >
                 <Icon className={`w-4 h-4 ${isActive ? 'text-[#d4af37]' : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
+                {tab.badge !== undefined && tab.badge > 0 && (
+                  <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-purple-950/80 border border-purple-500/50 text-purple-200 font-mono">
+                    {tab.badge}
+                  </span>
+                )}
               </button>
             );
           })}

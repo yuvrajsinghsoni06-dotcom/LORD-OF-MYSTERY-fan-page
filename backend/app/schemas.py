@@ -28,6 +28,7 @@ class BeyonderBase(BaseModel):
     sanity_percentage: float = Field(100.0, ge=0.0, le=100.0)
     affiliation: str
     characteristics: Optional[str] = None
+    avatar_url: Optional[str] = None
 
 
 class BeyonderCreate(BeyonderBase):
@@ -41,6 +42,7 @@ class BeyonderUpdate(BaseModel):
     sanity_percentage: Optional[float] = Field(None, ge=0.0, le=100.0)
     affiliation: Optional[str] = None
     characteristics: Optional[str] = None
+    avatar_url: Optional[str] = None
     pathway_id: Optional[int] = None
 
 
@@ -136,3 +138,54 @@ class DashboardMetrics(BaseModel):
     open_commissions: int
     completed_commissions: int
     corrupted_beyonders_count: int
+    total_squads: Optional[int] = 0
+
+
+# Squad Schemas
+class SquadMemberResponse(BaseModel):
+    id: int
+    beyonder_id: int
+    role: str
+    codename: Optional[str] = None
+    sequence_level: Optional[int] = None
+    sequence_name: Optional[str] = None
+    pathway_name: Optional[str] = None
+    affiliation: Optional[str] = None
+    sanity_percentage: Optional[float] = None
+    avatar_url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class SquadCreate(BaseModel):
+    name: str
+    motto: Optional[str] = None
+    formation_type: Optional[str] = "BALANCED"
+    member_ids: List[int] = Field(..., min_length=3, max_length=4, description="Squad formation strictly limited to 3-4 members only")
+    member_roles: Optional[dict] = None  # beyonder_id -> role string
+
+
+class SquadUpdate(BaseModel):
+    name: Optional[str] = None
+    motto: Optional[str] = None
+    formation_type: Optional[str] = None
+    member_ids: Optional[List[int]] = Field(None, min_length=3, max_length=4, description="Squad formation strictly limited to 3-4 members only")
+    member_roles: Optional[dict] = None
+    status: Optional[str] = None
+
+
+class SquadResponse(BaseModel):
+    id: int
+    name: str
+    motto: Optional[str] = None
+    formation_type: str
+    status: str
+    member_count: int
+    average_sequence: float
+    average_sanity: float
+    hazard_clearance: int
+    synergies: List[str]
+    members: List[SquadMemberResponse]
+
+    model_config = ConfigDict(from_attributes=True)
+

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Claim, Commission, Beyonder
+from app.models import Claim, Commission, Beyonder, Squad
 from app.schemas import ClaimCreate, ClaimDebrief, ClaimResponse, DashboardMetrics
 from app.validation import validate_sequence_level_for_claim
 
@@ -55,6 +55,7 @@ def get_dashboard_metrics(db: Session = Depends(get_db)):
     high_risk_commissions = len([c for c in commissions if c.hazard_rank >= 5 and c.status == "OPEN"])
     open_commissions = len([c for c in commissions if c.status == "OPEN"])
     completed_commissions = len([c for c in commissions if c.status == "COMPLETED"])
+    total_squads = db.query(Squad).count()
     
     return DashboardMetrics(
         total_beyonders=total_beyonders,
@@ -64,7 +65,8 @@ def get_dashboard_metrics(db: Session = Depends(get_db)):
         total_commissions=total_commissions,
         open_commissions=open_commissions,
         completed_commissions=completed_commissions,
-        corrupted_beyonders_count=corrupted_count
+        corrupted_beyonders_count=corrupted_count,
+        total_squads=total_squads
     )
 
 

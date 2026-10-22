@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <defs>
+    <radialGradient id="bg_grad" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#2a1c06" />
+      <stop offset="100%" stop-color="#0f0902" />
+    </radialGradient>
+    <linearGradient id="gold_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd700" />
+      <stop offset="50%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#ffd700" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Tarot Card Outer Body -->
+  <rect x="4" y="4" width="192" height="232" rx="10" fill="url(#bg_grad)" stroke="#ffd700" stroke-width="2.5" />
+  <rect x="8" y="8" width="184" height="224" rx="7" fill="none" stroke="#f59e0b" stroke-width="0.8" stroke-dasharray="4,2" opacity="0.6" />
+
+  <!-- Top Tarot Header -->
+  <rect x="15" y="14" width="170" height="20" rx="3" fill="#07090e" stroke="#ffd700" stroke-width="0.8" opacity="0.8" />
+  <text x="100" y="28" fill="#ffd700" font-family="Georgia, serif" font-size="9" font-weight="bold" text-anchor="middle" letter-spacing="1.5">
+    TRUE DEITY • SUN
+  </text>
+
+  <!-- Central Mystical Halo & Portrait Circle -->
+  <circle cx="100" cy="85" r="48" fill="#080a10" stroke="#ffd700" stroke-width="2" filter="url(#glow)" />
+  <circle cx="100" cy="85" r="44" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="6,3" opacity="0.8" />
+
+  <!-- Victorian Silhouette Bust / Symbol -->
+  <g transform="translate(60, 45) scale(0.8)">
+    <!-- Shoulders & Coat -->
+    <path d="M10,85 C15,65 30,55 50,55 C70,55 85,65 90,85 Z" fill="#141824" stroke="#fbbf24" stroke-width="1.2" />
+    <path d="M50,55 L40,85 M50,55 L60,85" stroke="#ffd700" stroke-width="0.8" opacity="0.5" />
+    
+    <!-- Head / Mask / Sigil -->
+    <circle cx="50" cy="38" r="16" fill="#1e2235" stroke="#fbbf24" stroke-width="1.5" />
+
+    <!-- Occult Feature (Top Hat / Eye / Monocle / Horns / Hood) -->
+    <!-- Feature-specific emblem inside head -->
+    <circle cx="50" cy="38" r="12" fill="#2a1c06" />
+  </g>
+
+  <!-- Large Center Tarot Icon -->
+  <text x="100" y="93" font-size="28" text-anchor="middle" filter="url(#glow)">☀️</text>
+
+  <!-- Sequence Level Emblem Pill -->
+  <rect x="65" y="125" width="70" height="18" rx="9" fill="#06080e" stroke="#ffd700" stroke-width="1.2" />
+  <text x="100" y="137" fill="#ffd700" font-family="Georgia, serif" font-size="10" font-weight="bold" text-anchor="middle">
+    Seq 0
+  </text>
+
+  <!-- Member Name Banner -->
+  <rect x="12" y="152" width="176" height="42" rx="4" fill="#080a12" stroke="#f59e0b" stroke-width="1" opacity="0.9" />
+  <text x="100" y="169" fill="#f8fafc" font-family="Georgia, serif" font-size="11" font-weight="bold" text-anchor="middle">
+    Eternal Blazing S…
+  </text>
+  <text x="100" y="184" fill="#fbbf24" font-family="Georgia, serif" font-size="9.5" text-anchor="middle" font-style="italic">
+    Eternal Blazing
+  </text>
+
+  <!-- Bottom Affiliation Footer -->
+  <rect x="12" y="198" width="176" height="22" rx="3" fill="#06070a" stroke="#ffd700" stroke-width="0.8" opacity="0.7" />
+  <text x="100" y="213" fill="#94a3b8" font-family="Georgia, serif" font-size="8.5" text-anchor="middle">
+    Church of Eternal Blazing 
+  </text>
+</svg>

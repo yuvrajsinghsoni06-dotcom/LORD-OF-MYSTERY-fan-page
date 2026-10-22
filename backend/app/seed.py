@@ -1,5 +1,11 @@
+import re
 from app.database import SessionLocal, engine, Base
-from app.models import Pathway, Beyonder, Potion, Commission, Claim
+from app.models import Pathway, Beyonder, Potion, Commission, Claim, Squad, SquadMember
+
+
+def sanitize_slug(name: str) -> str:
+    slug = re.sub(r'[^a-zA-Z0-9]', '_', name.lower()).strip('_')
+    return re.sub(r'_+', '_', slug)
 
 
 def seed_database(force=False):
@@ -18,6 +24,8 @@ def seed_database(force=False):
             # If refreshing, remove old records to reseed cleanly
             db.query(Claim).delete()
             db.query(Commission).delete()
+            db.query(SquadMember).delete()
+            db.query(Squad).delete()
             db.query(Beyonder).delete()
             db.query(Potion).delete()
             db.query(Pathway).delete()
@@ -676,9 +684,11 @@ def seed_database(force=False):
             }
         ]
 
+        beyonder_objs = {}
         for item in beyonders_data:
             p_name = item["pathway"]
             if p_name in pathway_objs:
+                slug = sanitize_slug(item["codename"])
                 b = Beyonder(
                     pathway_id=pathway_objs[p_name].id,
                     codename=item["codename"],
@@ -686,9 +696,12 @@ def seed_database(force=False):
                     sequence_name=item["sequence_name"],
                     sanity_percentage=item["sanity_percentage"],
                     affiliation=item["affiliation"],
-                    characteristics=item["characteristics"]
+                    characteristics=item["characteristics"],
+                    avatar_url=f"/avatars/{slug}.svg"
                 )
                 db.add(b)
+                db.flush()
+                beyonder_objs[item["codename"]] = b
 
         # =========================================================================
         # 3. POTION CODEX RECIPES FOR ALL 22 PATHWAYS (Rich Alchemy Details)
@@ -1102,8 +1115,86 @@ def seed_database(force=False):
             )
             db.add(c)
 
+        # =========================================================================
+        # 5. SQUADS (Strictly 3-4 Members Formation)
+        # =========================================================================
+        squads_data = [
+            {
+                "name": "Tingen Nighthawks Strike Team",
+                "motto": "We are guardians, but also miserable wretches.",
+                "formation_type": "BALANCED",
+                "members": [
+                    {"codename": "Captain Dunn Smith", "role": "Squad Leader"},
+                    {"codename": "The Star (Leonard Mitchell)", "role": "Vanguard"},
+                    {"codename": "Madam Daly Simone", "role": "Controller"}
+                ]
+            },
+            {
+                "name": "Tarot Club Major Arcana Vanguard",
+                "motto": "The Fool that doesn't belong to this era; The Mysterious Ruler above the gray fog.",
+                "formation_type": "ASSAULT",
+                "members": [
+                    {"codename": "The Fool (Klein Moretti)", "role": "Squad Leader"},
+                    {"codename": "Justice (Audrey Hall)", "role": "Controller"},
+                    {"codename": "The Hanged Man (Alger Wilson)", "role": "Vanguard"},
+                    {"codename": "The Sun (Derrick Berg)", "role": "Support"}
+                ]
+            },
+            {
+                "name": "Golden Dream Expedition Corsair",
+                "motto": "Knowledge is power across the turbulent five seas.",
+                "formation_type": "INVESTIGATION",
+                "members": [
+                    {"codename": "Edwina Edwards (Vice Admiral Iceberg)", "role": "Squad Leader"},
+                    {"codename": "Blazing Danitz", "role": "Vanguard"},
+                    {"codename": "Anderson Hood (Strongest Hunter)", "role": "Specialist"},
+                    {"codename": "Frank Lee (Mad Botanist)", "role": "Support"}
+                ]
+            },
+            {
+                "name": "City of Silver Demon Hunting Unit",
+                "motto": "Never surrender in the endless dark; seek the light.",
+                "formation_type": "DEFENSIVE",
+                "members": [
+                    {"codename": "Colin Iliad (Chief of City of Silver)", "role": "Squad Leader"},
+                    {"codename": "The Sun (Derrick Berg)", "role": "Support"},
+                    {"codename": "Lovia (Elder of the Council)", "role": "Vanguard"}
+                ]
+            },
+            {
+                "name": "Red Gloves Exorcism Taskforce",
+                "motto": "Night is our shield, crimson our blade.",
+                "formation_type": "ASSAULT",
+                "members": [
+                    {"codename": "Crestet Cesario", "role": "Squad Leader"},
+                    {"codename": "Anthony Stevenson", "role": "Controller"},
+                    {"codename": "The Star (Leonard Mitchell)", "role": "Vanguard"}
+                ]
+            }
+        ]
+
+        for s_data in squads_data:
+            squad = Squad(
+                name=s_data["name"],
+                motto=s_data["motto"],
+                formation_type=s_data["formation_type"],
+                status="READY"
+            )
+            db.add(squad)
+            db.flush()
+
+            for m in s_data["members"]:
+                b_obj = beyonder_objs.get(m["codename"])
+                if b_obj:
+                    sm = SquadMember(
+                        squad_id=squad.id,
+                        beyonder_id=b_obj.id,
+                        role=m["role"]
+                    )
+                    db.add(sm)
+
         db.commit()
-        print("Database successfully seeded with all 22 Pathways, full organizations roster, and canonical characteristics!")
+        print("Database successfully seeded with all 22 Pathways, full organizations roster, canonical characteristics, and 3-4 member squads!")
     except Exception as e:
         db.rollback()
         print(f"Error seeding database: {e}")
