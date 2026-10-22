@@ -26,9 +26,11 @@ class Beyonder(Base):
     sanity_percentage = Column(Float, nullable=False, default=100.0)  # 0.0 - 100.0%
     affiliation = Column(String, nullable=False)
     characteristics = Column(Text, nullable=True)  # Abilities, sealed artifacts, traits, mythical creature forms
+    avatar_url = Column(String, nullable=True)  # Visual character portrait URL or SVG avatar
 
     pathway = relationship("Pathway", back_populates="beyonders")
     claims = relationship("Claim", back_populates="beyonder", cascade="all, delete-orphan")
+    squad_memberships = relationship("SquadMember", back_populates="beyonder", cascade="all, delete-orphan")
 
 
 class Potion(Base):
@@ -70,3 +72,28 @@ class Claim(Base):
 
     commission = relationship("Commission", back_populates="claims")
     beyonder = relationship("Beyonder", back_populates="claims")
+
+
+class Squad(Base):
+    __tablename__ = "squads"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False, index=True)
+    motto = Column(String, nullable=True)
+    formation_type = Column(String, nullable=False, default="BALANCED")  # BALANCED, ASSAULT, DEFENSIVE, INVESTIGATION, RITUAL
+    status = Column(String, nullable=False, default="READY")  # READY, DEPLOYED
+
+    members = relationship("SquadMember", back_populates="squad", cascade="all, delete-orphan")
+
+
+class SquadMember(Base):
+    __tablename__ = "squad_members"
+
+    id = Column(Integer, primary_key=True, index=True)
+    squad_id = Column(Integer, ForeignKey("squads.id", ondelete="CASCADE"), nullable=False)
+    beyonder_id = Column(Integer, ForeignKey("beyonders.id", ondelete="CASCADE"), nullable=False)
+    role = Column(String, nullable=False, default="Vanguard")  # Leader, Vanguard, Controller, Support, Diviner
+
+    squad = relationship("Squad", back_populates="members")
+    beyonder = relationship("Beyonder", back_populates="squad_memberships")
+

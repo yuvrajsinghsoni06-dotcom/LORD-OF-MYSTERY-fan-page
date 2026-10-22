@@ -5,6 +5,7 @@ import BeyonderDirectory from './components/BeyonderDirectory';
 import PotionCodex from './components/PotionCodex';
 import CommissionBoard from './components/CommissionBoard';
 import ClaimsList from './components/ClaimsList';
+import SquadFormation from './components/SquadFormation';
 import DispatchModal from './components/DispatchModal';
 import DebriefModal from './components/DebriefModal';
 import BeyonderFormModal from './components/BeyonderFormModal';
@@ -23,7 +24,12 @@ import {
   claimCommission,
   getClaims,
   postDebrief,
-  getMetrics
+  getMetrics,
+  getSquads,
+  createSquad,
+  updateSquad,
+  deleteSquad,
+  dispatchSquad,
 } from './api/client';
 
 export default function App() {
@@ -35,6 +41,7 @@ export default function App() {
   const [potions, setPotions] = useState([]);
   const [commissions, setCommissions] = useState([]);
   const [claims, setClaims] = useState([]);
+  const [squads, setSquads] = useState([]);
   const [metrics, setMetrics] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -53,7 +60,7 @@ export default function App() {
   // Load all initial data from backend
   const refreshAllData = async () => {
     try {
-      const [pathwaysData, beyondersData, potionsData, commissionsData, claimsData, metricsData] =
+      const [pathwaysData, beyondersData, potionsData, commissionsData, claimsData, metricsData, squadsData] =
         await Promise.all([
           getPathways(),
           getBeyonders(),
@@ -61,6 +68,7 @@ export default function App() {
           getCommissions(),
           getClaims(),
           getMetrics(),
+          getSquads(),
         ]);
 
       setPathways(pathwaysData);
@@ -69,6 +77,7 @@ export default function App() {
       setCommissions(commissionsData);
       setClaims(claimsData);
       setMetrics(metricsData);
+      setSquads(squadsData);
     } catch (err) {
       console.error('Failed to load data from FastAPI backend:', err);
     } finally {
@@ -139,9 +148,32 @@ export default function App() {
     await refreshAllData();
   };
 
+  // Squad handlers
+  const handleCreateSquad = async (data) => {
+    await createSquad(data);
+    await refreshAllData();
+  };
+
+  const handleUpdateSquad = async (id, data) => {
+    await updateSquad(id, data);
+    await refreshAllData();
+  };
+
+  const handleDeleteSquad = async (id) => {
+    if (window.confirm('Disband this squad? This action cannot be undone.')) {
+      await deleteSquad(id);
+      await refreshAllData();
+    }
+  };
+
+  const handleDispatchSquad = async (squadId, commissionId) => {
+    await dispatchSquad(squadId, commissionId);
+    await refreshAllData();
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0b0e] text-slate-100 flex flex-col font-serif">
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} squadCount={squads.length} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-6">
         {loading ? (
@@ -191,6 +223,18 @@ export default function App() {
                 claims={claims}
                 onOpenDebriefModal={handleOpenDebrief}
                 onOpenDispatchModal={handleOpenDispatch}
+              />
+            )}
+
+            {activeTab === 'squads' && (
+              <SquadFormation
+                squads={squads}
+                beyonders={beyonders}
+                commissions={commissions}
+                onCreateSquad={handleCreateSquad}
+                onUpdateSquad={handleUpdateSquad}
+                onDeleteSquad={handleDeleteSquad}
+                onDispatchSquad={handleDispatchSquad}
               />
             )}
           </>

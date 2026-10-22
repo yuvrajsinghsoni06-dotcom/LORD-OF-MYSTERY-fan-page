@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Plus, Filter, AlertTriangle, Shield, UserX, Edit2, ChevronDown, ChevronUp, Sparkles, Building2, Flame } from 'lucide-react';
+import { Search, Plus, Filter, AlertTriangle, Shield, UserX, Edit2, ChevronDown, ChevronUp, Sparkles, Building2, Flame, Eye, X } from 'lucide-react';
+import BeyonderAvatar from './BeyonderAvatar';
 
 export default function BeyonderDirectory({
   beyonders,
@@ -12,6 +13,7 @@ export default function BeyonderDirectory({
   const [selectedPathway, setSelectedPathway] = useState('');
   const [selectedAffiliation, setSelectedAffiliation] = useState('');
   const [expandedAgentId, setExpandedAgentId] = useState(null);
+  const [inspectingAgent, setInspectingAgent] = useState(null);
 
   const filteredBeyonders = beyonders.filter(b => {
     const term = searchTerm.toLowerCase();
@@ -39,7 +41,7 @@ export default function BeyonderDirectory({
             <Shield className="w-6 h-6 text-[#d4af37]" /> Beyonder Operative & Divine Member Directory
           </h2>
           <p className="text-xs text-slate-400 font-serif mt-1">
-            Enlisted registry of active Beyonders, high-sequence deities, angel monarchs, church leaders, pirate admirals, and supernatural characteristics.
+            Enlisted registry of active Beyonders, high-sequence deities, church leaders, pirate admirals, visual tarot portraits, and supernatural characteristics.
           </p>
         </div>
         <button
@@ -103,6 +105,7 @@ export default function BeyonderDirectory({
         <table className="w-full text-left font-serif text-sm">
           <thead>
             <tr className="border-b border-slate-800 text-slate-400 uppercase text-xs">
+              <th className="py-3 px-3">Portrait</th>
               <th className="py-3 px-4">Operative / Deity</th>
               <th className="py-3 px-4">Pathway</th>
               <th className="py-3 px-4">Sequence & Rank</th>
@@ -131,10 +134,25 @@ export default function BeyonderDirectory({
               return (
                 <React.Fragment key={agent.id}>
                   <tr className={`hover:bg-[#191c28]/60 transition ${isExpanded ? 'bg-[#151722]' : ''}`}>
+                    {/* Character Picture / Avatar */}
+                    <td className="py-3 px-3">
+                      <BeyonderAvatar
+                        avatarUrl={agent.avatar_url}
+                        name={agent.codename}
+                        sequenceLevel={agent.sequence_level}
+                        pathway={agent.pathway_name || 'Fool'}
+                        size="md"
+                        onClick={() => setInspectingAgent(agent)}
+                      />
+                    </td>
+
                     <td className="py-3 px-4 font-semibold text-slate-100">
                       <div className="flex items-center gap-2">
                         <span className={`w-2 h-2 rounded-full ${agent.sequence_level <= 3 ? 'bg-[#d4af37] shadow-sm shadow-amber-400' : 'bg-slate-500'}`}></span>
-                        <span className={agent.sequence_level === 0 ? 'text-[#e6c656] font-bold gold-glow' : 'text-slate-100'}>
+                        <span
+                          className={`cursor-pointer hover:underline ${agent.sequence_level === 0 ? 'text-[#e6c656] font-bold gold-glow' : 'text-slate-100'}`}
+                          onClick={() => setInspectingAgent(agent)}
+                        >
                           {agent.codename}
                         </span>
                       </div>
@@ -219,19 +237,29 @@ export default function BeyonderDirectory({
                   {/* Expanded Characteristics Row */}
                   {isExpanded && (
                     <tr className="bg-[#11131b]">
-                      <td colSpan="7" className="p-4 border-b border-[#c5a059]/20">
-                        <div className="p-4 rounded-lg bg-[#0d0e12] border border-[#272a38] space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs uppercase font-serif tracking-wider text-[#d4af37] font-semibold flex items-center gap-1.5">
-                              <Sparkles className="w-3.5 h-3.5" /> Canonical Characteristics, Sealed Artifacts & Traits:
-                            </span>
-                            <span className="text-xs text-purple-300 font-mono">
-                              Sequence {agent.sequence_level}: {agent.sequence_name || 'Operative'}
-                            </span>
+                      <td colSpan="8" className="p-4 border-b border-[#c5a059]/20">
+                        <div className="p-4 rounded-lg bg-[#0d0e12] border border-[#272a38] flex flex-col md:flex-row gap-5 items-start">
+                          <BeyonderAvatar
+                            avatarUrl={agent.avatar_url}
+                            name={agent.codename}
+                            sequenceLevel={agent.sequence_level}
+                            pathway={agent.pathway_name || 'Fool'}
+                            size="xl"
+                            onClick={() => setInspectingAgent(agent)}
+                          />
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs uppercase font-serif tracking-wider text-[#d4af37] font-semibold flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5" /> Canonical Characteristics, Sealed Artifacts & Traits:
+                              </span>
+                              <span className="text-xs text-purple-300 font-mono">
+                                Sequence {agent.sequence_level}: {agent.sequence_name || 'Operative'}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-300 leading-relaxed font-serif italic bg-[#151722] p-3 rounded border border-slate-800/80">
+                              {agent.characteristics || "No specialized characteristics recorded for this operative."}
+                            </p>
                           </div>
-                          <p className="text-xs text-slate-300 leading-relaxed font-serif italic bg-[#151722] p-3 rounded border border-slate-800/80">
-                            {agent.characteristics || "No specialized characteristics recorded for this operative."}
-                          </p>
                         </div>
                       </td>
                     </tr>
@@ -242,7 +270,7 @@ export default function BeyonderDirectory({
 
             {filteredBeyonders.length === 0 && (
               <tr>
-                <td colSpan="7" className="text-center py-10 text-slate-500 italic">
+                <td colSpan="8" className="text-center py-10 text-slate-500 italic">
                   No Beyonder operatives match the specified filter criteria.
                 </td>
               </tr>
@@ -250,6 +278,62 @@ export default function BeyonderDirectory({
           </tbody>
         </table>
       </div>
+
+      {/* Tarot Card Preview Modal */}
+      {inspectingAgent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in">
+          <div className="gothic-card gothic-card-gold max-w-sm w-full p-6 rounded-lg space-y-4 text-center relative">
+            <button
+              onClick={() => setInspectingAgent(null)}
+              className="absolute top-3 right-3 text-slate-400 hover:text-slate-100 p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="mx-auto w-48 h-56 rounded-lg overflow-hidden border-2 border-[#d4af37] shadow-xl shadow-amber-950/40 bg-black">
+              {inspectingAgent.avatar_url ? (
+                <img
+                  src={inspectingAgent.avatar_url}
+                  alt={inspectingAgent.codename}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[#181424] text-[#e6c656] text-xl font-serif">
+                  🎴
+                </div>
+              )}
+            </div>
+
+            <div>
+              <span className="text-[11px] uppercase tracking-widest text-purple-300 block">
+                {inspectingAgent.pathway_name} Pathway • Sequence {inspectingAgent.sequence_level}
+              </span>
+              <h3 className="text-lg font-serif font-bold text-[#e6c656] gold-glow mt-0.5">
+                {inspectingAgent.codename}
+              </h3>
+              <p className="text-xs text-amber-300 italic">
+                {inspectingAgent.sequence_name || inspectingAgent.pathway_name}
+              </p>
+            </div>
+
+            <div className="p-3 rounded bg-[#0d0e12] border border-[#272a38] text-left text-xs font-serif space-y-1.5">
+              <div className="flex justify-between text-slate-400">
+                <span>Affiliation:</span>
+                <span className="text-slate-200 font-semibold">{inspectingAgent.affiliation}</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Sanity Status:</span>
+                <span className={inspectingAgent.sanity_percentage > 70 ? 'text-emerald-400' : 'text-amber-400'}>
+                  {inspectingAgent.sanity_percentage}%
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300 italic pt-1 border-t border-slate-800">
+                "{inspectingAgent.characteristics}"
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

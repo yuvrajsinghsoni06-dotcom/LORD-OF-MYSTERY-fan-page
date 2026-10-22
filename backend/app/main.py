@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import engine, Base
 from app.seed import seed_database
-from app.routers import pathways, beyonders, potions, commissions, claims
+from app.routers import pathways, beyonders, potions, commissions, claims, squads
 
 
 @asynccontextmanager
@@ -43,6 +43,7 @@ app.include_router(beyonders.router)
 app.include_router(potions.router)
 app.include_router(commissions.router)
 app.include_router(claims.router)
+app.include_router(squads.router)
 
 
 @app.get("/")

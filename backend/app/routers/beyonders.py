@@ -19,6 +19,7 @@ def format_beyonder_response(beyonder: Beyonder) -> dict:
         "sanity_percentage": beyonder.sanity_percentage,
         "affiliation": beyonder.affiliation,
         "characteristics": beyonder.characteristics,
+        "avatar_url": beyonder.avatar_url,
         "pathway_name": beyonder.pathway.name if beyonder.pathway else None,
     }
 
@@ -68,7 +69,8 @@ def create_beyonder(beyonder_in: BeyonderCreate, db: Session = Depends(get_db)):
         sequence_name=beyonder_in.sequence_name,
         sanity_percentage=beyonder_in.sanity_percentage,
         affiliation=beyonder_in.affiliation,
-        characteristics=beyonder_in.characteristics
+        characteristics=beyonder_in.characteristics,
+        avatar_url=beyonder_in.avatar_url
     )
     db.add(beyonder)
     db.commit()

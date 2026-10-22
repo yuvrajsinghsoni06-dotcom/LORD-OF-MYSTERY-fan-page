@@ -36,3 +36,12 @@ export const getClaims = (params) => api.get('/api/claims/', { params }).then(r 
 export const dispatchClaim = (data) => api.post('/api/claims/', data).then(r => r.data);
 export const postDebrief = (claimId, data) => api.post(`/api/claims/${claimId}/debrief`, data).then(r => r.data);
 export const getMetrics = () => api.get('/api/claims/metrics').then(r => r.data);
+
+// Squads Formation
+export const getSquads = () => api.get('/api/squads/').then(r => r.data);
+export const getSquad = (id) => api.get(`/api/squads/${id}`).then(r => r.data);
+export const createSquad = (data) => api.post('/api/squads/', data).then(r => r.data);
+export const updateSquad = (id, data) => api.put(`/api/squads/${id}`, data).then(r => r.data);
+export const deleteSquad = (id) => api.delete(`/api/squads/${id}`).then(r => r.data);
+export const dispatchSquad = (squadId, commissionId) => 
+  api.post(`/api/squads/${squadId}/dispatch`, { commission_id: commissionId }).then(r => r.data);
